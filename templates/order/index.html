@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}
+  Лента заказов
+{% endblock %}
+{% block content %}
+
+  {% for order in page_obj %}
+    <article class="mb-5">
+      {% include "includes/order_card.html" %}
+    </article>
+  {% endfor %}
+  {% include "includes/paginator.html" %}
+{% endblock %}

@@ -1,0 +1,41 @@
+<div class="col d-flex justify-content-center">
+  <div class="card shadow-lg rounded-3" style="width: 40rem;">
+    <div class="card-body">
+      
+      <!-- Заголовок с ID заказа и статусом -->
+      <h4 class="card-title d-flex justify-content-between">
+        <!-- Ссылка на детали заказа -->
+        <a href="{% url  'orders:order_detail' order.id %}" class="fw-bold text-decoration-none">
+          Заказ №{{ order.id }}
+        </a>
+        <!-- Статус заказа справа -->
+        <span class="badge 
+          {% if order.status == 'waiting' %}bg-warning{% elif order.status == 'ready' %}bg-success{% elif order.status == 'paid' %}bg-primary{% endif %} ms-auto">
+          {{ order.get_status_display }}
+        </span>
+      </h4>
+      <h5 class="text-center text-muted">Стол №{{ order.table_number }}</h5>
+      <hr>
+      
+
+      <!-- Список блюд -->
+      <ul class="list-group list-group-flush">
+        {% for item in order.order_items.all %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <span class="fw-semibold">{{ item.dish.name }}</span>
+
+            </div>
+            <span class="fw-bold">{{ item.quantity }} шт.</span>
+            {% comment %} <span class="fw-bold">{{ item.dish.price|floatformat:2 }} руб.</span> {% endcomment %}
+          </li>
+        {% endfor %}
+      </ul>
+
+      <!-- Общая стоимость -->
+      <div class="text-end mt-3">
+        <h5 class="fw-bold">Итого: {{ order.total_price|floatformat:2 }} руб.</h5>
+      </div>
+    </div>
+  </div>
+</div>
