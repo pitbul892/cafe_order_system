@@ -20,7 +20,7 @@
         <!-- Статус заказа с кнопкой для изменения -->
          
         <button type="button" class="btn 
-          {% if order.status == 'waiting' %}bg-warning{% elif order.status == 'ready' %}btn-success{% elif order.status == 'paid' %}btn-primary{% endif %}
+          {% if order.status == 'Waiting' %}bg-warning{% elif order.status == 'Ready' %}btn-success{% elif order.status == 'Paid' %}btn-primary{% endif %}
           ms-auto fw-bold text-uppercase text-white" 
           data-bs-toggle="modal" data-bs-target="#statusModal">
           
@@ -81,9 +81,9 @@
           <div class="form-group">
             <label for="status">Выберите статус:</label>
             <select name="status" id="status" class="form-control">
-              <option value="waiting" {% if order.status == 'waiting' %}selected{% endif %}>Ожидает</option>
-              <option value="ready" {% if order.status == 'ready' %}selected{% endif %}>Готов</option>
-              <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>Оплачен</option>
+              <option value="Waiting" {% if order.status == 'Waiting' %}selected{% endif %}>Ожидает</option>
+              <option value="Ready" {% if order.status == 'Ready' %}selected{% endif %}>Готов</option>
+              <option value="Paid" {% if order.status == 'Paid' %}selected{% endif %}>Оплачен</option>
             </select>
           </div>
       </div>

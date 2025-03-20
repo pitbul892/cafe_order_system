@@ -8,7 +8,7 @@ import constants as c
 class Dish(models.Model):
     """Модель блюда."""
 
-    name = models.CharField('Название блюда', max_length=100)
+    name = models.CharField('Название блюда', max_length=100, unique=True)
     price = models.DecimalField('Стоимость блюда',
                                 max_digits=6,
                                 decimal_places=2)
@@ -49,7 +49,11 @@ class Order(models.Model):
                                       default=0,
                                       editable=False)
     status = models.CharField('Статус', max_length=100,
-                              choices=c.STATUS_CHOICES, default='waiting')
+                              choices=c.STATUS_CHOICES, default='Waiting')
+    pub_date = models.DateTimeField(
+        "Дата и время создания", auto_now_add=True
+        
+    )
 
     @staticmethod
     @receiver(post_save, sender=OrderItem)

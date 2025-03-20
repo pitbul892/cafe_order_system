@@ -5,25 +5,25 @@
 {% endblock %}
 
 {% block content %}
+<div class="container">
+  <!-- Кнопка для расчёта выручки за смену -->
+  <a href="{% url 'orders:index' %}" class="btn btn-outline-dark mb-3">Расчет выручки за смену</a>
+  <!-- Форма поиска -->
+  <form method="GET" action="{% url 'orders:index' %}" class="mb-4">
+    <div class="input-group">
+      <input type="text" name="q" class="form-control" placeholder="Поиск по номеру стола или статусу" value="{{ request.GET.q }}">
+      <button class="btn btn-outline-dark" type="submit">Поиск</button>
+    </div>
+  </form>
   <div class="container">
+    
     <div class="row">
-      <!-- Колонка для статуса 'paid' -->
-      <div class="col-md-4 mb-3">
-        <h3>Ожидает</h3>
-        {% for order in page_obj %}
-          {% if order.status == 'paid' %}
-            <article class="mb-5">
-              {% include "includes/order_card.html" %}
-            </article>
-          {% endif %}
-        {% endfor %}
-      </div>
-
       <!-- Колонка для статуса 'waiting' -->
       <div class="col-md-4 mb-3">
-        <h3>Готов</h3>
+        <h3>В ожидании</h3>
         {% for order in page_obj %}
-          {% if order.status == 'waiting' %}
+       
+          {% if order.status == 'Waiting' %}
             <article class="mb-5">
               {% include "includes/order_card.html" %}
             </article>
@@ -33,9 +33,23 @@
 
       <!-- Колонка для статуса 'ready' -->
       <div class="col-md-4 mb-3">
-        <h3>Оплачен</h3>
+        <h3>Готово</h3>
         {% for order in page_obj %}
-          {% if order.status == 'ready' %}
+          {% if order.status == 'Ready' %}
+            <article class="mb-5">
+              {% include "includes/order_card.html" %}
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Колонка для статуса 'paid' -->
+      <div class="col-md-4 mb-3">
+        
+        <h3>Оплачено</h3>
+        
+        {% for order in page_obj %}
+          {% if order.status == 'Paid' %}
             <article class="mb-5">
               {% include "includes/order_card.html" %}
             </article>

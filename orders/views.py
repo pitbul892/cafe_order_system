@@ -5,31 +5,33 @@ from django.views.generic import (
     CreateView)
 from .forms import OrderForm
 from django.shortcuts import get_object_or_404, redirect, render
+import constants as c
+from django.utils import timezone
 # Create your views here.
 
 # def paginator(page_number, post_list):
 #     paginator = Paginator(post_list, 5)
 #     return paginator.get_page(page_number)
 
-def index(request):
+def order_list(request):
+    today = timezone.now().date()
     template = ("order/index.html",)
-    order_list = Order.objects.all()
+    query = request.GET.get("q", "").strip().capitalize()  # Получаем параметр из поисковой строки
+    orders = Order.objects.filter(pub_date__date=today)
+
+    if query:
+        # Преобразуем запрос, если это русский статус
+        status_filter = c.STATUS_DICT.get(query)
+
+        if status_filter:
+            orders = orders.filter(status=status_filter)
+        else:
+            orders = orders.filter(table_number__icontains=query)
     # page_obj = paginator(request.GET.get("page"), order_list)
-    context = {"page_obj": order_list}
+    print(orders)
+    context = {"page_obj": orders}
     return render(request, template, context)
 
-# def order_detail(request, order_id):
-#     template = ("order/detail.html",)
-#     order = get_object_or_404(Order, pk=order_id)
-#     # Для каждого заказа вычисляем стоимость каждого блюда
-#     for item in order.order_items.all():
-#         item.total_price = item.dish.price * item.quantity
-#         print(item.dish.price, item.quantity, item.total_price)
-
-#     context = {"order": order}
-    
-    
-#     return render(request, template, context)
 
 
 

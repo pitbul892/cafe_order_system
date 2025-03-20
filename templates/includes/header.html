@@ -10,7 +10,13 @@
       <!-- Пример дополнительных ссылок, которые можно добавить -->
       <div>
         <a href="{% url 'orders:index' %}" class="btn btn-outline-dark ms-3">Главная</a>
-        {% comment %} <a href="{% url 'orders:create' %}" class="btn btn-outline-dark ms-3">Создать заказ</a> {% endcomment %}
+        <a href="{% url 'orders:order_create' %}" class="btn btn-outline-dark ms-3">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="4" width="4" height="16" fill="black"/>
+              <rect x="4" y="10" width="16" height="4" fill="black"/>
+          </svg>
+          Создать заказ
+      </a>
       </div>
     </div>
   </nav>

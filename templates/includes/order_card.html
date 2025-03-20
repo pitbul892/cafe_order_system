@@ -10,7 +10,7 @@
         </a>
         <!-- Статус заказа справа -->
         <span class="badge 
-          {% if order.status == 'waiting' %}bg-warning{% elif order.status == 'ready' %}bg-success{% elif order.status == 'paid' %}bg-primary{% endif %} ms-auto">
+          {% if order.status == 'Waiting' %}bg-warning{% elif order.status == 'Ready' %}bg-success{% elif order.status == 'Paid' %}bg-primary{% endif %} ms-auto">
           {{ order.get_status_display }}
         </span>
       </h4>
