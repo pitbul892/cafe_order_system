@@ -1,13 +1,49 @@
 {% extends "base.html" %}
+
 {% block title %}
   Лента заказов
 {% endblock %}
-{% block content %}
 
-  {% for order in page_obj %}
-    <article class="mb-5">
-      {% include "includes/order_card.html" %}
-    </article>
-  {% endfor %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <!-- Колонка для статуса 'paid' -->
+      <div class="col-md-4 mb-3">
+        <h3>Ожидает</h3>
+        {% for order in page_obj %}
+          {% if order.status == 'paid' %}
+            <article class="mb-5">
+              {% include "includes/order_card.html" %}
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Колонка для статуса 'waiting' -->
+      <div class="col-md-4 mb-3">
+        <h3>Готов</h3>
+        {% for order in page_obj %}
+          {% if order.status == 'waiting' %}
+            <article class="mb-5">
+              {% include "includes/order_card.html" %}
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Колонка для статуса 'ready' -->
+      <div class="col-md-4 mb-3">
+        <h3>Оплачен</h3>
+        {% for order in page_obj %}
+          {% if order.status == 'ready' %}
+            <article class="mb-5">
+              {% include "includes/order_card.html" %}
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  
   {% include "includes/paginator.html" %}
 {% endblock %}

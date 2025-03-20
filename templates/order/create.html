@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Создание нового заказа{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Создание нового заказа</h1>
+
+    <form method="post" id="order-form">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="table_number" class="form-label">Номер стола</label>
+            {{ order_form.table_number }}
+        </div>
+
+        <h3>Добавить блюдо в заказ</h3>
+        <div class="mb-3">
+            <label for="dish" class="form-label">Выберите блюдо</label>
+            <select id="dish" class="form-select" >
+                <option value="" disabled selected>Выберите блюдо</option>
+                {% for dish in dishes %}
+                    <option value="{{ dish.id }}">{{ dish.name }}</option>
+                {% endfor %}
+            </select>
+            
+        </div>
+
+        <div class="mb-3">
+            <button type="button" id="add-item" class="btn btn-primary">Добавить блюдо в заказ</button>
+        </div>
+        <div class="invalid-feedback">Выберите хотя бы одно блюдо.</div>
+        <div id="order-items">
+            <!-- Сюда будут добавляться выбранные блюда -->
+        </div>
+        <div id="hidden-order-items"></div>
+        <button type="submit" class="btn btn-success">Создать заказ</button>
+    </form>
+</div>
+
+<script>
+    // Сохраняем временный список блюд в заказе
+    let orderItems = [];
+
+    // Функция для обновления отображения добавленных блюд
+    function updateOrderItems() {
+        const orderItemsContainer = document.getElementById('order-items');
+        orderItemsContainer.innerHTML = ''; // Очищаем контейнер
+
+        orderItems.forEach((item, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('order-item', 'border', 'p-3', 'mb-2', 'rounded');
+            itemDiv.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <p><strong>${item.name}</strong> - Количество: ${item.quantity}</p>
+                    <div>
+                        <button type="button" onclick="removeItem(${index})" class="btn btn-danger btn-sm">Удалить</button>
+                        <button type="button" onclick="increaseQuantity(${index})" class="btn btn-secondary btn-sm">+</button>
+                        <button type="button" onclick="decreaseQuantity(${index})" class="btn btn-secondary btn-sm">-</button>
+                    </div>
+                </div>
+            `;
+            orderItemsContainer.appendChild(itemDiv);
+        });
+    }
+
+    // Функция для добавления блюда в список
+    document.getElementById('add-item').addEventListener('click', () => {
+        const dishSelect = document.getElementById('dish');
+        const dishId = dishSelect.value;
+        const dishName = dishSelect.options[dishSelect.selectedIndex].text;
+        const invalidFeedback = document.querySelector('.invalid-feedback');
+        invalidFeedback.style.display = 'none'; // Скрываем ошибку перед добавлением
+
+        if (!dishId) {
+            // Если блюдо не выбрано, показываем ошибку
+            invalidFeedback.style.display = 'block';
+        } else {
+            // Проверяем, есть ли уже это блюдо в списке
+            const existingItemIndex = orderItems.findIndex(item => item.id === dishId);
+
+            if (existingItemIndex !== -1) {
+                orderItems[existingItemIndex].quantity += 1; // Увеличиваем количество, если блюдо уже в заказе
+            } else {
+                orderItems.push({ id: dishId, name: dishName, quantity: 1 });
+            }
+
+            updateOrderItems(); // Обновляем отображение
+            dishSelect.value = ''; // Очистить поле выбора блюда
+        }
+    });
+
+    // Функция для удаления блюда из списка
+    function removeItem(index) {
+        orderItems.splice(index, 1);
+        updateOrderItems();
+    }
+
+    // Функция для увеличения количества блюда
+    function increaseQuantity(index) {
+        orderItems[index].quantity += 1;
+        updateOrderItems();
+    }
+
+    // Функция для уменьшения количества блюда
+    function decreaseQuantity(index) {
+        if (orderItems[index].quantity > 1) {
+            orderItems[index].quantity -= 1;
+        }
+        updateOrderItems();
+    }
+
+    // Преобразуем список выбранных блюд в скрытые поля перед отправкой формы
+    document.getElementById('order-form').addEventListener('submit', function(event) {
+        const dishSelect = document.getElementById('dish');
+        if (orderItems.length === 0) {
+            event.preventDefault(); // Останавливаем отправку формы
+            dishSelect.classList.add('is-invalid'); // Добавляем класс ошибки
+            document.querySelector('.invalid-feedback').style.display = 'block'; // Показываем сообщение об ошибке
+        } else {
+            dishSelect.classList.remove('is-invalid'); // Убираем класс ошибки, если заказ не пустой
+            document.querySelector('.invalid-feedback').style.display = 'none'; // Скрываем сообщение об ошибке
+        }
+
+        const hiddenItemsContainer = document.getElementById('hidden-order-items');
+        hiddenItemsContainer.innerHTML = ''; // Очищаем старые скрытые поля
+
+        orderItems.forEach((item) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'order_items';  // Этот параметр будет использован на сервере
+            input.value = `${item.id}:${item.quantity}`;  // Формат: id:quantity
+            hiddenItemsContainer.appendChild(input);
+        });
+    });
+</script>
+
+{% endblock %}
