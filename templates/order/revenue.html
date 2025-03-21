@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Выручка за смену
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4 text-">Информация о выручке и заказах за смену</h2>
+
+  <!-- Блок для вывода общей информации -->
+  <div class="row mb-4">
+    <div class="col-md-6 mb-3">
+      <div class="card shadow-sm p-2 h-100">
+        <h4 class="text-center">Всего заказов</h4>
+        <p class="text-center fs-3 fw-bold">{{ total_orders }}</p>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card shadow-sm p-3 h-100">
+        <h4 class="text-center">Выручка за смену</h4>
+        <p class="text-center fs-3 fw-bold">{{ total_revenue|floatformat:2 }} руб.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Кнопка для возврата к ленте заказов -->
+  <div class="d-flex justify-content-center mt-4">
+    <a href="{% url 'orders:index' %}" class="btn btn-outline-dark">Назад к ленте заказов</a>
+  </div>
+</div>
+{% endblock %}

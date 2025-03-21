@@ -12,23 +12,22 @@ from django.utils import timezone
 # def paginator(page_number, post_list):
 #     paginator = Paginator(post_list, 5)
 #     return paginator.get_page(page_number)
-
+today = timezone.now().date()
 def order_list(request):
-    today = timezone.now().date()
+    
     template = ("order/index.html",)
     query = request.GET.get("q", "").strip().capitalize()  # Получаем параметр из поисковой строки
     orders = Order.objects.filter(pub_date__date=today)
 
     if query:
         # Преобразуем запрос, если это русский статус
-        status_filter = c.STATUS_DICT.get(query)
+        status_filter = c.STATUS_DICT.get(query) 
 
         if status_filter:
             orders = orders.filter(status=status_filter)
         else:
             orders = orders.filter(table_number__icontains=query)
     # page_obj = paginator(request.GET.get("page"), order_list)
-    print(orders)
     context = {"page_obj": orders}
     return render(request, template, context)
 
@@ -92,3 +91,12 @@ class OrderCreateView(View):
             except Exception as e:
                 return render(request, 'order/create.html', {'error': f"Ошибка при обработке блюда: {e}"})
         return redirect("orders:index")
+    
+def revenue_for_shift(request):
+    template = ("order/revenue.html",)
+    orders = Order.objects.filter(pub_date__date=today, status='Paid')
+    total_revenue = sum(order.total_price for order in orders)
+    total_orders = orders.count()
+    context = {"total_revenue": total_revenue,
+               'total_orders': total_orders}
+    return render(request, template, context)

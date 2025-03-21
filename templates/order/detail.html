@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% block title %}
-  {{ order.id }} | 
+
+  Заказ №{{ order.id }}
 {% endblock %}
 {% block content %}
+
 <div class="col d-flex justify-content-center">
+  
   <div class="card shadow-lg rounded-3" style="width: 40rem;">
     <div class="card-body">
       
@@ -62,9 +65,11 @@
         Удалить заказ
       </a>
     </div>
+    
   </div>
   
 </div>
+
 
 <!-- Модальное окно для выбора нового статуса -->
 <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
@@ -94,5 +99,8 @@
       </div>
     </div>
   </div>
+</div>
+<div class="mt-3 d-flex justify-content-start ms-5">
+  <a href="{% url 'orders:index' %}" class="btn btn-outline-dark">Назад к ленте заказов</a>
 </div>
 {% endblock %}

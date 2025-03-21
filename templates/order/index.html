@@ -7,7 +7,7 @@
 {% block content %}
 <div class="container">
   <!-- Кнопка для расчёта выручки за смену -->
-  <a href="{% url 'orders:index' %}" class="btn btn-outline-dark mb-3">Расчет выручки за смену</a>
+  <a href="{% url 'orders:revenue' %}" class="btn btn-outline-dark mb-3">Расчет выручки за смену</a>
   <!-- Форма поиска -->
   <form method="GET" action="{% url 'orders:index' %}" class="mb-4">
     <div class="input-group">
