@@ -1,27 +1,32 @@
-from django.shortcuts import render
-from .models import Order
-from django.core.paginator import Paginator
-from django.views.generic import (
-    CreateView)
-from .forms import OrderForm
+# from django.core.paginator import Paginator
+from typing import Any
+
 from django.shortcuts import get_object_or_404, redirect, render
-import constants as c
 from django.utils import timezone
-# Create your views here.
+from django.views.generic import View
+
+import constants as c
+
+from .forms import OrderForm, OrderItemForm
+from .models import Dish, Order, OrderItem
 
 # def paginator(page_number, post_list):
 #     paginator = Paginator(post_list, 5)
 #     return paginator.get_page(page_number)
+
 today = timezone.now().date()
-def order_list(request):
-    
-    template = ("order/index.html",)
-    query = request.GET.get("q", "").strip().capitalize()  # Получаем параметр из поисковой строки
+
+
+def order_list(request: Any) -> Any:
+    """Получение списка."""
+    template = 'order/index.html'
+    # Получаем параметр из поисковой строки
+    query = request.GET.get('q', '').strip().capitalize()
     orders = Order.objects.filter(pub_date__date=today)
 
-    if query:
+    if status_filter := c.STATUS_DICT.get(query):
         # Преобразуем запрос, если это русский статус
-        status_filter = c.STATUS_DICT.get(query) 
+        status_filter = c.STATUS_DICT.get(query)
 
         if status_filter:
             orders = orders.filter(status=status_filter)
@@ -32,9 +37,8 @@ def order_list(request):
     return render(request, template, context)
 
 
-
-
-def order_detail(request, order_id):
+def order_detail(request: Any, order_id: int) -> Any:
+    """Получение по id."""
     order = get_object_or_404(Order, pk=order_id)
 
     if request.method == 'POST':
@@ -44,42 +48,40 @@ def order_detail(request, order_id):
             order.status = new_status
             order.save()
             return redirect('orders:order_detail', order_id=order.id)
-    
     context = {
         'order': order,
     }
 
     return render(request, 'order/detail.html', context)
 
-def order_delete(request, order_id):
+
+def order_delete(request: Any, order_id: int) -> Any:
+    """Удаление заказа."""
     order = get_object_or_404(Order, pk=order_id)
     if request.method == "POST":
         order.delete()
         return redirect("orders:index")
     return render(request, "order/confirm_delete.html", {"order": order})
 
-from .forms import OrderItemForm
-from .models import Dish, OrderItem
-from django.views.generic import View
-from django.http import JsonResponse
 
 class OrderCreateView(View):
     """Страница для создания нового заказа."""
 
-    def get(self, request):
-
+    def get(self, request: Any) -> Any:
+        """Вывод формы."""
         order_form = OrderForm()
         item_form = OrderItemForm()
         dishes = Dish.objects.all()
-        
+
         return render(request, 'order/create.html', {
             'order_form': order_form,
             'item_form': item_form,
             'dishes': dishes,
         })
 
-    def post(self, request):
-        order_items_data = request.POST.getlist('order_items')  # передаем данные как список
+    def post(self, request: Any) -> Any:
+        """Создание заказа."""
+        order_items_data = request.POST.getlist('order_items')
         order = Order.objects.create(table_number=request.POST['table_number'])
 
         # Обрабатываем блюда
@@ -87,13 +89,21 @@ class OrderCreateView(View):
             try:
                 dish_id, quantity = item.split(":")
                 dish = Dish.objects.get(id=dish_id)
-                OrderItem.objects.create(order=order, dish=dish, quantity=int(quantity))
+                OrderItem.objects.create(
+                    order=order,
+                    dish=dish,
+                    quantity=int(quantity))
             except Exception as e:
-                return render(request, 'order/create.html', {'error': f"Ошибка при обработке блюда: {e}"})
+                return render(
+                    request,
+                    'order/create.html',
+                    {'error': f'Ошибка при обработке блюда: {e}'})
         return redirect("orders:index")
-    
-def revenue_for_shift(request):
-    template = ("order/revenue.html",)
+
+
+def revenue_for_shift(request: Any) -> Any:
+    """Получение выручки за смену."""
+    template = "order/revenue.html"
     orders = Order.objects.filter(pub_date__date=today, status='Paid')
     total_revenue = sum(order.total_price for order in orders)
     total_orders = orders.count()

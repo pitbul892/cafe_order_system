@@ -1,13 +1,16 @@
-import os
-import django
 import csv
+import os
+
+import django
 from django.db.utils import IntegrityError
+
 # Указываем Django, где находятся настройки проекта
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 
 # Инициализируем Django
 django.setup()
 import csv
+
 from orders.models import Dish
 
 # Открываем CSV файл

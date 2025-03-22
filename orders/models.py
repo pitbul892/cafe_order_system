@@ -52,12 +52,12 @@ class Order(models.Model):
                               choices=c.STATUS_CHOICES, default='Waiting')
     pub_date = models.DateTimeField(
         "Дата и время создания", auto_now_add=True
-        
     )
 
     @staticmethod
     @receiver(post_save, sender=OrderItem)
     def update_order_total(sender, instance, **kwargs):
+        """Обновление заказа, чтобы посчитать стоимость."""
         # Получаем заказ, к которому относится этот элемент
         order = instance.order
         order.calculate_total_price()
@@ -70,10 +70,14 @@ class Order(models.Model):
             for order_item in self.order_items.all()
         )
         self.total_price = total
+
     def get_status_display(self):
+        """Получить статус."""
         return dict(c.STATUS_CHOICES).get(self.status, self.status)
+
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
+
     def __str__(self):
-        return f"{self.id} заказ, стол №{self.table_number}"
+        return f'{self.id} заказ, стол №{self.table_number}'
